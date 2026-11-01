@@ -1,6 +1,6 @@
 import { useRef, type PointerEvent } from 'react'
 import { SidebarRail, useSidebar } from '@/components/ui/sidebar'
-import { clampDragWidth, settleWidth, sidebarWidths, willCollapse } from '../lib/sidebar-width.ts'
+import { clampDragWidth, settleWidth, sidebarWidths, willCollapse } from '../../lib/sidebar-width.ts'
 
 const dragThreshold = 3
 

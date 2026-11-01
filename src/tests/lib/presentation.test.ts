@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatDate, formatSprintDates, initials, progressOf } from './presentation.ts'
+import { formatDate, formatSprintDates, initials, progressOf } from '../../lib/presentation.ts'
 
 describe('initials', () => {
   it('reads Azure DevOps names in "Last, First" order', () => {

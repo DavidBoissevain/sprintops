@@ -3,8 +3,8 @@ import { monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/ad
 import { autoScrollForElements } from '@atlaskit/pragmatic-drag-and-drop-auto-scroll/element'
 import { useEffect, useEffectEvent, useMemo, useState, type RefObject } from 'react'
 import type { Input } from '@atlaskit/pragmatic-drag-and-drop/types'
-import { locate, resolveMove, type BacklogMove, type DropPosition } from '../lib/backlog-move.ts'
-import { descendantIds, visibleRows, type BacklogNode } from '../lib/backlog-tree.ts'
+import { locate, resolveMove, type BacklogMove, type DropPosition } from './backlog-move.ts'
+import { descendantIds, visibleRows, type BacklogNode } from './backlog-tree.ts'
 import { BacklogRow, type RowDropData } from './BacklogRow.tsx'
 import { DragChip, type DraggedItem } from './DragChip.tsx'
 

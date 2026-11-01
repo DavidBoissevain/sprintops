@@ -2,7 +2,7 @@ import { Moon, Sun } from 'lucide-react'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
-import { applyTheme, currentTheme } from '../lib/theme.ts'
+import { applyTheme, currentTheme } from '../../lib/theme.ts'
 
 export function ThemeToggle() {
   const [theme, setTheme] = useState(currentTheme)

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { iterationLabel, toItemDetails } from './item-details.ts'
+import { iterationLabel, toItemDetails } from '../../../pages/backlog/item-details.ts'
 
 const effortField = 'Microsoft.VSTS.Scheduling.Effort'
 

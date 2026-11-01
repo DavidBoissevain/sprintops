@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { clampDragWidth, settleWidth, sidebarWidths, willCollapse } from './sidebar-width.ts'
+import { clampDragWidth, settleWidth, sidebarWidths, willCollapse } from '../../lib/sidebar-width.ts'
 
 describe('clampDragWidth', () => {
   it('follows the pointer between the rail and the maximum', () => {

@@ -7,9 +7,9 @@ import { useEffect, useEffectEvent, useRef, useState } from 'react'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
-import { dropKind, type DragRow, type DropPosition } from '../lib/backlog-move.ts'
-import type { BacklogNode } from '../lib/backlog-tree.ts'
-import { initials } from '../lib/presentation.ts'
+import { initials } from '../../lib/presentation.ts'
+import { dropKind, type DragRow, type DropPosition } from './backlog-move.ts'
+import type { BacklogNode } from './backlog-tree.ts'
 import { StatusIcon, TypeIcon } from './BacklogIcons.tsx'
 
 const indentPerLevel = 1.25

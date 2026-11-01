@@ -5,7 +5,7 @@ import { createRoot } from 'react-dom/client'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import './index.css'
 import App from './App.tsx'
-import { Toaster } from './components/Toaster.tsx'
+import { Toaster } from './components/layout/Toaster.tsx'
 import { AzureDevOpsError } from './lib/azure-devops.ts'
 import { toasts } from './lib/toasts.ts'
 

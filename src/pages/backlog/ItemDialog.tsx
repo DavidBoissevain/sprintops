@@ -5,13 +5,13 @@ import { Button } from '@/components/ui/button'
 import { Dialog, DialogClose, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
-import { useItemDetails } from '../hooks/use-item-details.ts'
-import { AzureDevOpsError } from '../lib/azure-devops.ts'
-import type { BacklogItem } from '../lib/backlog-tree.ts'
-import { iterationLabel, type ItemClient } from '../lib/item-details.ts'
-import { formatDate, initials } from '../lib/presentation.ts'
+import { AzureDevOpsError } from '../../lib/azure-devops.ts'
+import { formatDate, initials } from '../../lib/presentation.ts'
+import type { BacklogItem } from './backlog-tree.ts'
 import { StatusIcon, TypeIcon } from './BacklogIcons.tsx'
+import { iterationLabel, type ItemClient } from './item-details.ts'
 import { RichText } from './RichText.tsx'
+import { useItemDetails } from './use-item-details.ts'
 
 function Person({ name, className }: { name: string; className?: string }) {
   return (

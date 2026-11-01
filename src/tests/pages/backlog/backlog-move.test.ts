@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { applyMove, dropKind, resolveMove, type DragRow } from './backlog-move.ts'
-import { buildTree, type BacklogItem, type BacklogLink } from './backlog-tree.ts'
+import { applyMove, dropKind, resolveMove, type DragRow } from '../../../pages/backlog/backlog-move.ts'
+import { buildTree, type BacklogItem, type BacklogLink } from '../../../pages/backlog/backlog-tree.ts'
 
 const types = ['Epic', 'Feature', 'Product Backlog Item']
 

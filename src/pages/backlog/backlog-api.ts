@@ -1,4 +1,4 @@
-import { retryOnReset, type AzureDevOpsClient, type BacklogConfiguration, type PatchOperation, type TeamFieldValue, type WorkItem } from './azure-devops.ts'
+import { retryOnReset, type AzureDevOpsClient, type BacklogConfiguration, type PatchOperation, type TeamFieldValue, type WorkItem } from '../../lib/azure-devops.ts'
 import type { BacklogMove } from './backlog-move.ts'
 import { buildTree, type BacklogItem, type BacklogLink } from './backlog-tree.ts'
 

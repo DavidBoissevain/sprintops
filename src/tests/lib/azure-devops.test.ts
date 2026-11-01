@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { AzureDevOpsError, createClient, isAttachmentUrl } from './azure-devops.ts'
+import { AzureDevOpsError, createClient, isAttachmentUrl } from '../../lib/azure-devops.ts'
 
 const organization = 'contoso'
 const attachmentPath = '_apis/wit/attachments/0f1e2d3c?fileName=image.png'

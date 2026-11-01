@@ -2,7 +2,7 @@ import { monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/ad
 import type { Input } from '@atlaskit/pragmatic-drag-and-drop/types'
 import { useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
-import { descendantIds, type BacklogNode } from '../lib/backlog-tree.ts'
+import { descendantIds, type BacklogNode } from './backlog-tree.ts'
 import { TypeIcon } from './BacklogIcons.tsx'
 
 const pointerGap = { x: 8, y: 14 }

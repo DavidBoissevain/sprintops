@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { cn } from '@/lib/utils'
-import { progressOf } from '../lib/presentation.ts'
+import { progressOf } from '../../lib/presentation.ts'
 
 const insideTile = 'translate(8 8) scale(.68) translate(-8 -8)'
 

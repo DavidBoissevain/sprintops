@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from 'vitest'
-import { sanitizeRichText } from './rich-text.ts'
+import { sanitizeRichText } from '../../../pages/backlog/rich-text.ts'
 
 const parse = (html: string) => {
   const container = document.createElement('div')

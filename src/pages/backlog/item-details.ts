@@ -1,5 +1,5 @@
-import type { AzureDevOpsClient, Iteration, WorkItem } from './azure-devops.ts'
-import { formatSprintDates } from './presentation.ts'
+import type { AzureDevOpsClient, Iteration, WorkItem } from '../../lib/azure-devops.ts'
+import { formatSprintDates } from '../../lib/presentation.ts'
 
 export type ItemClient = Pick<AzureDevOpsClient, 'workItem' | 'comments' | 'iterations' | 'attachment' | 'workItemWebUrl'>
 

@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
-import { backlogQuery, backlogTypes, moveItem, MoveConflictError, type MoveClient } from './backlog-api.ts'
-import type { BacklogConfiguration, WorkItem } from './azure-devops.ts'
+import type { BacklogConfiguration, WorkItem } from '../../../lib/azure-devops.ts'
+import { backlogQuery, backlogTypes, moveItem, MoveConflictError, type MoveClient } from '../../../pages/backlog/backlog-api.ts'
 
 describe('backlogTypes', () => {
   it('lists types from the highest rank down', () => {

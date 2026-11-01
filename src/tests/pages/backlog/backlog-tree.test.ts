@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { buildTree, descendantIds, visibleRows, type BacklogItem } from './backlog-tree.ts'
+import { buildTree, descendantIds, visibleRows, type BacklogItem } from '../../../pages/backlog/backlog-tree.ts'
 
 const types = ['Epic', 'Feature', 'Product Backlog Item']
 

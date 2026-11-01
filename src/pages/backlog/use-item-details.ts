@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { toItemDetails, type ItemClient } from '../lib/item-details.ts'
+import { toItemDetails, type ItemClient } from './item-details.ts'
 
 const iterationsStaleTime = 60 * 60 * 1000
 

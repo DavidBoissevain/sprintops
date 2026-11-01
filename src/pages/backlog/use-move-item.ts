@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { MoveConflictError, moveItem, type Backlog, type MoveClient } from '../lib/backlog-api.ts'
-import { applyMove, type BacklogMove } from '../lib/backlog-move.ts'
-import { toasts } from '../lib/toasts.ts'
+import { toasts } from '../../lib/toasts.ts'
+import { MoveConflictError, moveItem, type Backlog, type MoveClient } from './backlog-api.ts'
+import { applyMove, type BacklogMove } from './backlog-move.ts'
 
 const mutationKey = ['move-item']
 

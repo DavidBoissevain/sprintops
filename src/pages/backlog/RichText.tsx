@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react'
 import { cn } from '@/lib/utils'
-import { sanitizeRichText } from '../lib/rich-text.ts'
+import { sanitizeRichText } from './rich-text.ts'
 
 interface RichTextProps {
   html: string
