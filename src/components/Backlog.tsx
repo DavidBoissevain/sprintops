@@ -7,8 +7,8 @@ import { visibleRows, type BacklogNode } from '../lib/backlog-tree.ts'
 import { initials } from '../lib/presentation.ts'
 import { StatusIcon, TypeIcon } from './BacklogIcons.tsx'
 
-const indentPerLevel = 20
-const sidePadding = 12
+const indentPerLevel = 1.25
+const sidePadding = 0.75
 
 export function Backlog({ tree }: { tree: BacklogNode[] }) {
   const [expanded, setExpanded] = useState(new Set<number>())
@@ -34,20 +34,20 @@ export function Backlog({ tree }: { tree: BacklogNode[] }) {
             role="treeitem"
             aria-level={depth + 1}
             aria-expanded={hasChildren ? isExpanded : undefined}
-            className="flex h-[34px] items-center gap-2 hover:bg-accent"
-            style={{ paddingLeft: sidePadding + depth * indentPerLevel, paddingRight: sidePadding }}
+            className="flex h-8.5 items-center gap-2 hover:bg-accent"
+            style={{ paddingLeft: `${sidePadding + depth * indentPerLevel}rem`, paddingRight: `${sidePadding}rem` }}
           >
             {hasChildren ? (
               <button
                 type="button"
                 aria-label={`${isExpanded ? 'Collapse' : 'Expand'} ${node.title}`}
-                className="flex size-5 shrink-0 items-center justify-center rounded text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                className="flex size-7 shrink-0 items-center justify-center rounded text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                 onClick={() => toggle(node.id)}
               >
-                <ChevronRight className={cn('size-3.5', isExpanded && 'rotate-90')} />
+                <ChevronRight className={cn('size-4.5', isExpanded && 'rotate-90')} />
               </button>
             ) : (
-              <span className="size-5 shrink-0" />
+              <span className="size-7 shrink-0" />
             )}
             <TypeIcon type={node.type} />
             <span className={cn('min-w-0 flex-1 truncate', depth === 0 && 'font-medium')}>{node.title}</span>
@@ -61,7 +61,7 @@ export function Backlog({ tree }: { tree: BacklogNode[] }) {
               <Tooltip>
                 <TooltipTrigger render={<span className="shrink-0" />}>
                   <Avatar size="sm" className="data-[size=sm]:size-5">
-                    <AvatarFallback className="text-[9px] font-medium">{initials(node.assignedTo)}</AvatarFallback>
+                    <AvatarFallback className="text-[0.5625rem] font-medium">{initials(node.assignedTo)}</AvatarFallback>
                   </Avatar>
                 </TooltipTrigger>
                 <TooltipContent>{node.assignedTo}</TooltipContent>

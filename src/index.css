@@ -139,11 +139,12 @@
   }
   body {
     @apply bg-sidebar text-foreground antialiased;
-    font-size: 13px;
+    font-size: 0.8125rem;
     letter-spacing: -0.006em;
   }
   html {
     @apply font-sans;
+    font-size: 110%;
   }
   button:not(:disabled),
   [role='button']:not(:disabled) {

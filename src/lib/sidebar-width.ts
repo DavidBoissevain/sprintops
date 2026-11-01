@@ -1,10 +1,11 @@
 export const sidebarWidths = {
-  default: 256,
-  min: 200,
-  max: 420,
-  // Where the backlog card starts when the sidebar is collapsed to its icon rail.
-  rail: 72,
-  collapseBelow: 150,
+  default: 282,
+  min: 220,
+  max: 462,
+  // Where the backlog card starts when the sidebar is collapsed to its icon rail:
+  // 4.5rem at the root font size in index.css.
+  rail: 79,
+  collapseBelow: 165,
 }
 
 const storageKey = 'sprintops.sidebar-width'
