@@ -1,11 +1,12 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { useState, type CSSProperties } from 'react'
+import { useRef, useState, type CSSProperties } from 'react'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import { AppSidebar } from './components/AppSidebar.tsx'
 import { Backlog } from './components/Backlog.tsx'
 import { SignIn } from './components/SignIn.tsx'
 import { SiteHeader } from './components/SiteHeader.tsx'
 import { connection } from './config.ts'
+import { useMoveItem } from './hooks/use-move-item.ts'
 import { AzureDevOpsError, createClient } from './lib/azure-devops.ts'
 import { loadBacklog } from './lib/backlog-api.ts'
 import { loadSidebarWidth, saveSidebarWidth } from './lib/sidebar-width.ts'
@@ -18,6 +19,8 @@ export default function App() {
   const queryClient = useQueryClient()
   const [signedIn, setSignedIn] = useState(() => tokens.hasToken())
   const [sidebarWidth, setSidebarWidth] = useState(loadSidebarWidth)
+  const scrollContainer = useRef<HTMLDivElement>(null)
+  const moveItem = useMoveItem(client)
 
   const backlog = useQuery({
     queryKey: ['backlog'],
@@ -58,14 +61,21 @@ export default function App() {
           <div className="flex h-11 shrink-0 items-center border-b border-border px-3">
             <h1 className="font-medium">Backlog</h1>
           </div>
-          <div className="min-h-0 flex-1 overflow-y-auto">
+          <div ref={scrollContainer} className="min-h-0 flex-1 overflow-y-auto">
             {backlog.isPending && <p className="p-3 text-muted-foreground">Loading the backlog…</p>}
             {backlog.isError && (
               <p role="alert" className="p-3">
                 Could not load the backlog: {backlog.error.message}
               </p>
             )}
-            {backlog.data && <Backlog tree={backlog.data} />}
+            {backlog.data && (
+              <Backlog
+                tree={backlog.data.tree}
+                types={backlog.data.types}
+                scrollContainer={scrollContainer}
+                onMove={moveItem.mutate}
+              />
+            )}
           </div>
         </SidebarInset>
       </div>

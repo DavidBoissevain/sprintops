@@ -5,6 +5,8 @@ export interface BacklogItem {
   state: string
   assignedTo?: string
   order?: number
+  // The real parent, which can be closed and so missing from the tree.
+  parent?: number
 }
 
 export interface BacklogNode extends BacklogItem {

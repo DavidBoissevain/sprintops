@@ -1,16 +1,19 @@
-import { ChevronRight } from 'lucide-react'
-import { useMemo, useState } from 'react'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
-import { cn } from '@/lib/utils'
+import { combine } from '@atlaskit/pragmatic-drag-and-drop/combine'
+import { monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
+import { autoScrollForElements } from '@atlaskit/pragmatic-drag-and-drop-auto-scroll/element'
+import { useEffect, useEffectEvent, useMemo, useState, type RefObject } from 'react'
+import { resolveMove, type BacklogMove, type DropPosition } from '../lib/backlog-move.ts'
 import { visibleRows, type BacklogNode } from '../lib/backlog-tree.ts'
-import { initials } from '../lib/presentation.ts'
-import { StatusIcon, TypeIcon } from './BacklogIcons.tsx'
+import { BacklogRow, type RowDropData } from './BacklogRow.tsx'
 
-const indentPerLevel = 1.25
-const sidePadding = 0.75
+interface BacklogProps {
+  tree: BacklogNode[]
+  types: string[]
+  scrollContainer: RefObject<HTMLElement | null>
+  onMove: (move: BacklogMove) => void
+}
 
-export function Backlog({ tree }: { tree: BacklogNode[] }) {
+export function Backlog({ tree, types, scrollContainer, onMove }: BacklogProps) {
   const [expanded, setExpanded] = useState(new Set<number>())
   const rows = useMemo(() => visibleRows(tree, expanded), [tree, expanded])
 
@@ -22,56 +25,46 @@ export function Backlog({ tree }: { tree: BacklogNode[] }) {
     })
   }
 
+  function expand(id: number) {
+    setExpanded((current) => new Set(current).add(id))
+  }
+
+  const drop = useEffectEvent((id: number, targetId: number, position: DropPosition) => {
+    const move = resolveMove(tree, id, targetId, position)
+    if (!move) return
+    if (position === 'inside') expand(targetId)
+    onMove(move)
+  })
+
+  useEffect(() => {
+    if (!scrollContainer.current) return undefined
+
+    return combine(
+      monitorForElements({
+        onDrop: ({ source, location }) => {
+          const target = location.current.dropTargets[0]
+          if (!target) return
+          const { id, position } = target.data as unknown as RowDropData
+          drop(source.data.id as number, id, position)
+        },
+      }),
+      autoScrollForElements({ element: scrollContainer.current }),
+    )
+  }, [scrollContainer])
+
   return (
     <ul role="tree" aria-label="Backlog" className="py-1">
-      {rows.map(({ node, depth }) => {
-        const hasChildren = node.children.length > 0
-        const isExpanded = expanded.has(node.id)
-
-        return (
-          <li
-            key={node.id}
-            role="treeitem"
-            aria-level={depth + 1}
-            aria-expanded={hasChildren ? isExpanded : undefined}
-            className="flex h-8.5 items-center gap-2 hover:bg-accent"
-            style={{ paddingLeft: `${sidePadding + depth * indentPerLevel}rem`, paddingRight: `${sidePadding}rem` }}
-          >
-            {hasChildren ? (
-              <button
-                type="button"
-                aria-label={`${isExpanded ? 'Collapse' : 'Expand'} ${node.title}`}
-                className="flex size-7 shrink-0 items-center justify-center rounded text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-                onClick={() => toggle(node.id)}
-              >
-                <ChevronRight className={cn('size-4.5', isExpanded && 'rotate-90')} />
-              </button>
-            ) : (
-              <span className="size-7 shrink-0" />
-            )}
-            <TypeIcon type={node.type} />
-            <span className={cn('min-w-0 flex-1 truncate', depth === 0 && 'font-medium')}>{node.title}</span>
-            <Tooltip>
-              <TooltipTrigger render={<span className="flex size-5 shrink-0 items-center justify-center" />}>
-                <StatusIcon state={node.state} />
-              </TooltipTrigger>
-              <TooltipContent>{node.state}</TooltipContent>
-            </Tooltip>
-            {node.assignedTo ? (
-              <Tooltip>
-                <TooltipTrigger render={<span className="shrink-0" />}>
-                  <Avatar size="sm" className="data-[size=sm]:size-5">
-                    <AvatarFallback className="text-[0.5625rem] font-medium">{initials(node.assignedTo)}</AvatarFallback>
-                  </Avatar>
-                </TooltipTrigger>
-                <TooltipContent>{node.assignedTo}</TooltipContent>
-              </Tooltip>
-            ) : (
-              <span className="size-5 shrink-0" />
-            )}
-          </li>
-        )
-      })}
+      {rows.map(({ node, depth }) => (
+        <BacklogRow
+          key={node.id}
+          node={node}
+          depth={depth}
+          types={types}
+          isExpanded={expanded.has(node.id)}
+          onToggle={toggle}
+          onExpand={expand}
+        />
+      ))}
     </ul>
   )
 }

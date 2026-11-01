@@ -1,9 +1,19 @@
-import type { AzureDevOpsClient, BacklogConfiguration, TeamFieldValue, WorkItem } from './azure-devops.ts'
+import type { AzureDevOpsClient, BacklogConfiguration, PatchOperation, TeamFieldValue, WorkItem } from './azure-devops.ts'
+import type { BacklogMove } from './backlog-move.ts'
 import { buildTree, type BacklogItem, type BacklogLink } from './backlog-tree.ts'
 
 const closedStates = ['Done', 'Closed', 'Removed']
 const parentChildLink = 'System.LinkTypes.Hierarchy-Forward'
+const childParentLink = 'System.LinkTypes.Hierarchy-Reverse'
 const batchSize = 200
+const readAttempts = 3
+const readRetryDelay = 500
+
+export class MoveConflictError extends Error {
+  constructor() {
+    super('This item was moved in Azure DevOps in the meantime')
+  }
+}
 
 const quote = (value: string) => `'${value.replaceAll("'", "''")}'`
 const quoteList = (values: string[]) => values.map(quote).join(', ')
@@ -36,8 +46,11 @@ function toItem(workItem: WorkItem, orderField: string): BacklogItem {
     state: fields['System.State'] as string,
     assignedTo: assignedTo?.displayName,
     order: fields[orderField] as number | undefined,
+    parent: fields['System.Parent'] as number | undefined,
   }
 }
+
+export type Backlog = Awaited<ReturnType<typeof loadBacklog>>
 
 export async function loadBacklog(client: AzureDevOpsClient) {
   const [configuration, team] = await Promise.all([client.backlogConfiguration(), client.teamFieldValues()])
@@ -51,7 +64,7 @@ export async function loadBacklog(client: AzureDevOpsClient) {
     source ? [{ parent: source.id, child: target.id }] : [],
   )
 
-  const fields = ['System.Title', 'System.WorkItemType', 'System.State', 'System.AssignedTo', orderField]
+  const fields = ['System.Title', 'System.WorkItemType', 'System.State', 'System.AssignedTo', 'System.Parent', orderField]
   const batches = []
   for (let start = 0; start < ids.length; start += batchSize) {
     batches.push(client.workItems(ids.slice(start, start + batchSize), fields))
@@ -59,5 +72,45 @@ export async function loadBacklog(client: AzureDevOpsClient) {
   const results = await Promise.all(batches)
   const items = results.flatMap(({ value }) => value.map((workItem) => toItem(workItem, orderField)))
 
-  return buildTree(items, links, types)
+  return { tree: buildTree(items, links, types), types }
+}
+
+// A reset connection reaches us as a TypeError from fetch. Nothing has been
+// written at this point, so unlike the writes below, the read can be repeated.
+async function readWorkItem(client: MoveClient, id: number) {
+  for (let attempt = 1; ; attempt++) {
+    try {
+      return await client.workItem(id)
+    } catch (error) {
+      if (!(error instanceof TypeError) || attempt === readAttempts) throw error
+      await new Promise((resolve) => setTimeout(resolve, attempt * readRetryDelay))
+    }
+  }
+}
+
+// Link changes don't raise `rev`, so only reading the parent shows that someone
+// else moved the item. A single PATCH swaps the links, because an item can have
+// only one parent.
+async function changeParent(client: MoveClient, id: number, fromParent: number | undefined, toParent: number) {
+  const workItem = await readWorkItem(client, id)
+  const relations = workItem.relations ?? []
+  const parentIndex = relations.findIndex(({ rel }) => rel === childParentLink)
+  const parent = relations[parentIndex]
+  const currentParent = parent ? Number(parent.url.split('/').at(-1)) : undefined
+  if (currentParent !== fromParent) throw new MoveConflictError()
+
+  const operations: PatchOperation[] = [
+    { op: 'test', path: '/rev', value: workItem.rev },
+    ...(parent ? [{ op: 'remove' as const, path: `/relations/${parentIndex}` }] : []),
+    { op: 'add', path: '/relations/-', value: { rel: childParentLink, url: client.workItemUrl(toParent) } },
+  ]
+  await client.updateWorkItem(id, operations)
+}
+
+export type MoveClient = Pick<AzureDevOpsClient, 'workItem' | 'workItemUrl' | 'updateWorkItem' | 'reorder'>
+
+// The link comes first, as in Azure DevOps' own drag, so the order is set under the new parent.
+export async function moveItem(client: MoveClient, { id, fromParent, toParent, previousId, nextId }: BacklogMove) {
+  if (toParent !== undefined && toParent !== fromParent) await changeParent(client, id, fromParent, toParent)
+  await client.reorder({ ids: [id], parentId: toParent ?? 0, previousId, nextId })
 }

@@ -47,12 +47,25 @@ export function createClient(tokens: TokenProvider, connection: Connection) {
       body: JSON.stringify(body),
     })
 
+  const patch = <T>(url: string, body: unknown, contentType: string) =>
+    request<T>(`${url}?${apiVersion}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': contentType },
+      body: JSON.stringify(body),
+    })
+
   return {
     backlogConfiguration: () => get<BacklogConfiguration>(`${team}/_apis/work/backlogconfiguration`),
     teamFieldValues: () => get<TeamFieldValues>(`${team}/_apis/work/teamsettings/teamfieldvalues`),
     queryLinks: (query: string) => post<LinkQueryResult>(`${team}/_apis/wit/wiql`, { query }),
     workItems: (ids: number[], fields: string[]) =>
       post<{ value: WorkItem[] }>(`${project}/_apis/wit/workitemsbatch`, { ids, fields }),
+    workItem: (id: number) => request<WorkItem>(`${project}/_apis/wit/workitems/${id}?$expand=relations&${apiVersion}`),
+    workItemUrl: (id: number) => `${organization}/_apis/wit/workItems/${id}`,
+    updateWorkItem: (id: number, operations: PatchOperation[]) =>
+      patch<WorkItem>(`${project}/_apis/wit/workitems/${id}`, operations, 'application/json-patch+json'),
+    reorder: (operation: ReorderOperation) =>
+      patch<{ value: { id: number; order: number }[] }>(`${team}/_apis/work/workitemsorder`, operation, 'application/json'),
   }
 }
 
@@ -85,5 +98,20 @@ export interface LinkQueryResult {
 
 export interface WorkItem {
   id: number
+  rev: number
   fields: Record<string, unknown>
+  relations?: { rel: string; url: string }[]
+}
+
+export interface PatchOperation {
+  op: 'add' | 'remove' | 'test'
+  path: string
+  value?: unknown
+}
+
+export interface ReorderOperation {
+  ids: number[]
+  parentId: number
+  previousId: number
+  nextId: number
 }
