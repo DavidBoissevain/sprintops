@@ -39,9 +39,9 @@
   --sidebar-accent-foreground: #1b1c21;
   --sidebar-border: rgb(27 28 33 / 9%);
   --sidebar-ring: #5259d6;
-  --level-epic: #d9730d;
-  --level-feature: #8a4fd3;
-  --level-item: #2f7fe0;
+  --level-epic: #e06c00;
+  --level-feature: #773b93;
+  --level-item: #0098c7;
   --status-active: #c98a00;
 }
 
@@ -78,9 +78,9 @@
   --sidebar-accent-foreground: #e6e7eb;
   --sidebar-border: rgb(255 255 255 / 7%);
   --sidebar-ring: #6c72e8;
-  --level-epic: #f0913a;
-  --level-feature: #a678e8;
-  --level-item: #5aa2f0;
+  --level-epic: #f28a2e;
+  --level-feature: #b07ad6;
+  --level-item: #38b6de;
   --status-active: #e8b339;
 }
 
