@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { buildTree, visibleRows, type BacklogItem } from './backlog-tree.ts'
+import { buildTree, descendantIds, visibleRows, type BacklogItem } from './backlog-tree.ts'
 
 const types = ['Epic', 'Feature', 'Product Backlog Item']
 
@@ -46,6 +46,28 @@ describe('buildTree', () => {
     const tree = buildTree([item(1, 'Feature', 1), item(2, 'Epic', 99)], [], types)
 
     expect(tree.map((node) => node.id)).toEqual([2, 1])
+  })
+})
+
+describe('descendantIds', () => {
+  it('lists children at every level', () => {
+    const [epic] = buildTree(
+      [item(1, 'Epic'), item(2, 'Feature'), item(3, 'Product Backlog Item'), item(4, 'Feature')],
+      [
+        { parent: 1, child: 2 },
+        { parent: 2, child: 3 },
+        { parent: 1, child: 4 },
+      ],
+      types,
+    )
+
+    expect(descendantIds(epic!)).toEqual([2, 3, 4])
+  })
+
+  it('is empty for an item without children', () => {
+    const [epic] = buildTree([item(1, 'Epic')], [], types)
+
+    expect(descendantIds(epic!)).toEqual([])
   })
 })
 

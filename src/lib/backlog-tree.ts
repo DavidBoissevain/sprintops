@@ -56,6 +56,10 @@ export function buildTree(items: BacklogItem[], links: BacklogLink[], types: str
     .sort((a, b) => compare(a, b, typeDepth))
 }
 
+export function descendantIds(node: BacklogNode): number[] {
+  return node.children.flatMap((child) => [child.id, ...descendantIds(child)])
+}
+
 export function visibleRows(tree: BacklogNode[], expanded: Set<number>) {
   const rows: BacklogRow[] = []
 

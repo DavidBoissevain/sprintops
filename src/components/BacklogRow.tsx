@@ -1,5 +1,6 @@
 import { combine } from '@atlaskit/pragmatic-drag-and-drop/combine'
 import { draggable, dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
+import { disableNativeDragPreview } from '@atlaskit/pragmatic-drag-and-drop/element/disable-native-drag-preview'
 import { attachClosestEdge, extractClosestEdge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
 import { ChevronRight } from 'lucide-react'
 import { useEffect, useEffectEvent, useRef, useState } from 'react'
@@ -25,13 +26,13 @@ interface BacklogRowProps {
   depth: number
   types: string[]
   isExpanded: boolean
+  isDimmed: boolean
   onToggle: (id: number) => void
   onExpand: (id: number) => void
 }
 
-export function BacklogRow({ node, depth, types, isExpanded, onToggle, onExpand }: BacklogRowProps) {
+export function BacklogRow({ node, depth, types, isExpanded, isDimmed, onToggle, onExpand }: BacklogRowProps) {
   const element = useRef<HTMLLIElement>(null)
-  const [dragging, setDragging] = useState(false)
   const [position, setPosition] = useState<DropPosition>()
 
   const { id, type, parent, title, state, assignedTo } = node
@@ -48,8 +49,7 @@ export function BacklogRow({ node, depth, types, isExpanded, onToggle, onExpand 
       draggable({
         element: element.current,
         getInitialData: () => ({ ...row }),
-        onDragStart: () => setDragging(true),
-        onDrop: () => setDragging(false),
+        onGenerateDragPreview: ({ nativeSetDragImage }) => disableNativeDragPreview({ nativeSetDragImage }),
       }),
       dropTargetForElements({
         element: element.current,
@@ -88,7 +88,7 @@ export function BacklogRow({ node, depth, types, isExpanded, onToggle, onExpand 
       aria-expanded={hasChildren ? isExpanded : undefined}
       className={cn(
         'relative flex h-8.5 cursor-default items-center gap-2 hover:bg-accent',
-        dragging && 'opacity-50',
+        isDimmed && 'opacity-50',
         position === 'inside' && 'bg-accent ring-1 ring-primary ring-inset',
       )}
       style={{ paddingLeft: inset, paddingRight: `${sidePadding}rem` }}

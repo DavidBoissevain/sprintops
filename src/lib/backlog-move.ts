@@ -31,7 +31,7 @@ export function dropKind(source: DragRow, target: DragRow, types: string[]) {
   return targetLevel === level - 1 && target.id !== source.parent ? 'inside' : undefined
 }
 
-function locate(nodes: BacklogNode[], id: number, parent?: BacklogNode): { node: BacklogNode; siblings: BacklogNode[]; parent?: BacklogNode } | undefined {
+export function locate(nodes: BacklogNode[], id: number, parent?: BacklogNode): { node: BacklogNode; siblings: BacklogNode[]; parent?: BacklogNode } | undefined {
   for (const node of nodes) {
     if (node.id === id) return { node, siblings: nodes, parent }
     const found = locate(node.children, id, node)
