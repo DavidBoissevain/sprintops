@@ -1,4 +1,4 @@
-import type { AzureDevOpsClient, BacklogConfiguration, PatchOperation, TeamFieldValue, WorkItem } from './azure-devops.ts'
+import { retryOnReset, type AzureDevOpsClient, type BacklogConfiguration, type PatchOperation, type TeamFieldValue, type WorkItem } from './azure-devops.ts'
 import type { BacklogMove } from './backlog-move.ts'
 import { buildTree, type BacklogItem, type BacklogLink } from './backlog-tree.ts'
 
@@ -6,8 +6,6 @@ const closedStates = ['Done', 'Closed', 'Removed']
 const parentChildLink = 'System.LinkTypes.Hierarchy-Forward'
 const childParentLink = 'System.LinkTypes.Hierarchy-Reverse'
 const batchSize = 200
-const readAttempts = 3
-const readRetryDelay = 500
 
 export class MoveConflictError extends Error {
   constructor() {
@@ -56,6 +54,7 @@ export async function loadBacklog(client: AzureDevOpsClient) {
   const [configuration, team] = await Promise.all([client.backlogConfiguration(), client.teamFieldValues()])
   const types = backlogTypes(configuration)
   const orderField = configuration.backlogFields.typeFields.Order
+  const effortField = configuration.backlogFields.typeFields.Effort
 
   const { workItemRelations } = await client.queryLinks(backlogQuery(types, team.values))
 
@@ -72,27 +71,14 @@ export async function loadBacklog(client: AzureDevOpsClient) {
   const results = await Promise.all(batches)
   const items = results.flatMap(({ value }) => value.map((workItem) => toItem(workItem, orderField)))
 
-  return { tree: buildTree(items, links, types), types }
-}
-
-// A reset connection reaches us as a TypeError from fetch. Nothing has been
-// written at this point, so unlike the writes below, the read can be repeated.
-async function readWorkItem(client: MoveClient, id: number) {
-  for (let attempt = 1; ; attempt++) {
-    try {
-      return await client.workItem(id)
-    } catch (error) {
-      if (!(error instanceof TypeError) || attempt === readAttempts) throw error
-      await new Promise((resolve) => setTimeout(resolve, attempt * readRetryDelay))
-    }
-  }
+  return { tree: buildTree(items, links, types), types, effortField }
 }
 
 // Link changes don't raise `rev`, so only reading the parent shows that someone
 // else moved the item. A single PATCH swaps the links, because an item can have
 // only one parent.
 async function changeParent(client: MoveClient, id: number, fromParent: number | undefined, toParent: number) {
-  const workItem = await readWorkItem(client, id)
+  const workItem = await retryOnReset(() => client.workItem(id))
   const relations = workItem.relations ?? []
   const parentIndex = relations.findIndex(({ rel }) => rel === childParentLink)
   const parent = relations[parentIndex]

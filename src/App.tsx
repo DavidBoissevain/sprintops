@@ -3,12 +3,14 @@ import { useRef, useState, type CSSProperties } from 'react'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import { AppSidebar } from './components/AppSidebar.tsx'
 import { Backlog } from './components/Backlog.tsx'
+import { ItemDialog } from './components/ItemDialog.tsx'
 import { SignIn } from './components/SignIn.tsx'
 import { SiteHeader } from './components/SiteHeader.tsx'
 import { connection } from './config.ts'
 import { useMoveItem } from './hooks/use-move-item.ts'
 import { AzureDevOpsError, createClient } from './lib/azure-devops.ts'
 import { loadBacklog } from './lib/backlog-api.ts'
+import type { BacklogItem } from './lib/backlog-tree.ts'
 import { loadSidebarWidth, saveSidebarWidth } from './lib/sidebar-width.ts'
 import { PatTokenProvider } from './lib/token-provider.ts'
 
@@ -19,6 +21,8 @@ export default function App() {
   const queryClient = useQueryClient()
   const [signedIn, setSignedIn] = useState(() => tokens.hasToken())
   const [sidebarWidth, setSidebarWidth] = useState(loadSidebarWidth)
+  // A copy of the row, so the dialog stays open if a refresh drops the item from the tree.
+  const [openItem, setOpenItem] = useState<BacklogItem>()
   const scrollContainer = useRef<HTMLDivElement>(null)
   const moveItem = useMoveItem(client)
 
@@ -74,11 +78,21 @@ export default function App() {
                 types={backlog.data.types}
                 scrollContainer={scrollContainer}
                 onMove={moveItem.mutate}
+                onOpen={setOpenItem}
               />
             )}
           </div>
         </SidebarInset>
       </div>
+      {openItem && backlog.data && (
+        <ItemDialog
+          key={openItem.id}
+          item={openItem}
+          client={client}
+          effortField={backlog.data.effortField}
+          onClose={() => setOpenItem(undefined)}
+        />
+      )}
     </SidebarProvider>
   )
 }

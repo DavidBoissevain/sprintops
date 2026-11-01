@@ -10,7 +10,7 @@ describe('backlogTypes', () => {
         { name: 'Epics', rank: 4, workItemTypes: [{ name: 'Epic' }] },
       ],
       requirementBacklog: { name: 'Backlog items', rank: 2, workItemTypes: [{ name: 'Product Backlog Item' }] },
-      backlogFields: { typeFields: { Order: 'Microsoft.VSTS.Common.BacklogPriority' } },
+      backlogFields: { typeFields: { Order: 'Microsoft.VSTS.Common.BacklogPriority', Effort: 'Microsoft.VSTS.Scheduling.Effort' } },
     }
 
     expect(backlogTypes(configuration)).toEqual(['Epic', 'Feature', 'Product Backlog Item'])

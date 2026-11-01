@@ -7,7 +7,7 @@ const contentSecurityPolicy = [
   "default-src 'none'",
   "script-src 'self'",
   "style-src 'self'",
-  "img-src 'self' data:",
+  "img-src 'self' data: blob:",
   "font-src 'self'",
   'connect-src https://dev.azure.com https://analytics.dev.azure.com',
   "base-uri 'none'",

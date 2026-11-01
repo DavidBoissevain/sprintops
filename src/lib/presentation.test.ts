@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { initials, progressOf } from './presentation.ts'
+import { formatDate, formatSprintDates, initials, progressOf } from './presentation.ts'
 
 describe('initials', () => {
   it('reads Azure DevOps names in "Last, First" order', () => {
@@ -25,5 +25,23 @@ describe('progressOf', () => {
   it('moves forward through the workflow', () => {
     expect(progressOf('Approved')).toBeLessThan(progressOf('Committed'))
     expect(progressOf('Committed')).toBeLessThan(progressOf('Done'))
+  })
+})
+
+describe('formatDate', () => {
+  const now = new Date('2026-11-01T12:00:00Z')
+
+  it('leaves out the current year', () => {
+    expect(formatDate('2026-10-12T12:00:00Z', now)).toBe('12 Oct')
+  })
+
+  it('shows any other year', () => {
+    expect(formatDate('2025-10-12T12:00:00Z', now)).toBe('12 Oct 2025')
+  })
+})
+
+describe('formatSprintDates', () => {
+  it('reads midnight UTC as that same day, wherever the viewer is', () => {
+    expect(formatSprintDates('2026-10-29T00:00:00Z', '2026-11-18T00:00:00Z')).toBe('29 Oct – 18 Nov')
   })
 })

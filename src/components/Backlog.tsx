@@ -13,9 +13,10 @@ interface BacklogProps {
   types: string[]
   scrollContainer: RefObject<HTMLElement | null>
   onMove: (move: BacklogMove) => void
+  onOpen: (item: BacklogNode) => void
 }
 
-export function Backlog({ tree, types, scrollContainer, onMove }: BacklogProps) {
+export function Backlog({ tree, types, scrollContainer, onMove, onOpen }: BacklogProps) {
   const [expanded, setExpanded] = useState(new Set<number>())
   const [dragged, setDragged] = useState<DraggedItem>()
   const rows = useMemo(() => visibleRows(tree, expanded), [tree, expanded])
@@ -76,6 +77,7 @@ export function Backlog({ tree, types, scrollContainer, onMove }: BacklogProps) 
             isDimmed={dimmedIds.has(node.id)}
             onToggle={toggle}
             onExpand={expand}
+            onOpen={onOpen}
           />
         ))}
       </ul>

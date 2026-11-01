@@ -15,3 +15,15 @@ const stateProgress: Record<string, number> = {
 
 // How far through its workflow an item is, from 0 to 1.
 export const progressOf = (state: string) => stateProgress[state] ?? 0
+
+export function formatDate(iso: string, now = new Date()) {
+  const date = new Date(iso)
+  const year = date.getFullYear() === now.getFullYear() ? undefined : 'numeric'
+  return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year })
+}
+
+// In UTC, because Azure DevOps stores sprint dates as midnight UTC.
+const sprintDate = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' })
+
+export const formatSprintDates = (start: string, finish: string) =>
+  `${sprintDate.format(new Date(start))} – ${sprintDate.format(new Date(finish))}`

@@ -14,8 +14,8 @@ const queryClient = new QueryClient({
     queries: {
       staleTime: 60_000,
       retry: (failureCount, error) => {
-        const denied = error instanceof AzureDevOpsError && (error.status === 401 || error.status === 403)
-        return !denied && failureCount < 3
+        const permanent = error instanceof AzureDevOpsError && [401, 403, 404].includes(error.status)
+        return !permanent && failureCount < 3
       },
     },
   },

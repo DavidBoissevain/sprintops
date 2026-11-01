@@ -29,9 +29,10 @@ interface BacklogRowProps {
   isDimmed: boolean
   onToggle: (id: number) => void
   onExpand: (id: number) => void
+  onOpen: (item: BacklogNode) => void
 }
 
-export function BacklogRow({ node, depth, types, isExpanded, isDimmed, onToggle, onExpand }: BacklogRowProps) {
+export function BacklogRow({ node, depth, types, isExpanded, isDimmed, onToggle, onExpand, onOpen }: BacklogRowProps) {
   const element = useRef<HTMLLIElement>(null)
   const [position, setPosition] = useState<DropPosition>()
 
@@ -113,7 +114,19 @@ export function BacklogRow({ node, depth, types, isExpanded, isDimmed, onToggle,
         <span className="size-7 shrink-0" />
       )}
       <TypeIcon type={type} />
-      <span className={cn('min-w-0 flex-1 truncate', depth === 0 && 'font-medium')}>{title}</span>
+      {/* Only the text opens the item: the rest of the row stays a drag area. */}
+      <span className="flex min-w-0 flex-1">
+        <button
+          type="button"
+          className={cn(
+            'min-w-0 truncate rounded-sm text-left underline-offset-2 hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
+            depth === 0 && 'font-medium',
+          )}
+          onClick={() => onOpen(node)}
+        >
+          {title}
+        </button>
+      </span>
       <Tooltip>
         <TooltipTrigger render={<span className="flex size-5 shrink-0 items-center justify-center" />}>
           <StatusIcon state={state} />
